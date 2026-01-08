@@ -1,0 +1,47 @@
+# ── Virtual environment ──
+.venv/
+venv/
+env/
+
+# ── Claude Code settings (never push) ──
+.claude/
+
+# ── PDF exports (generated locally, not source code) ──
+*.pdf
+generate_pdf.py
+
+# ── Dataset archives and raw data ──
+*.zip
+*.tar.gz
+pan25-multi-author-analysis/
+
+# ── Python cache ──
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ── Results / saved model artifacts (large binary files) ──
+results/*.npy
+results/*.joblib
+results/*.pt
+results/*.png
+
+# ── Keep the results directory itself (for README references) ──
+# but allow JSON result files through (small, human-readable)
+!results/*.json
+
+# ── Jupyter checkpoints ──
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── macOS metadata ──
+.DS_Store
+**/.DS_Store
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
