@@ -1,0 +1,68 @@
+{
+  "SVM": {
+    "doc_tuned_threshold": 0.32500000000000007,
+    "pairwise_threshold": 0.22500000000000006,
+    "doc_precision": 0.414936990363232,
+    "doc_recall": 0.4124351371386212,
+    "doc_f1": 0.40767146740089655,
+    "n_docs": 2698,
+    "per_difficulty": {
+      "easy": {
+        "doc_f1": 0.49669841269841275,
+        "n_docs": 900
+      },
+      "medium": {
+        "doc_f1": 0.3767148683722655,
+        "n_docs": 899
+      },
+      "hard": {
+        "doc_f1": 0.44271412680756395,
+        "n_docs": 899
+      }
+    }
+  },
+  "Siamese": {
+    "doc_tuned_threshold": 0.6250000000000002,
+    "pairwise_threshold": 0.42500000000000016,
+    "doc_precision": 0.4880219915987151,
+    "doc_recall": 0.49470595502841613,
+    "doc_f1": 0.4845026298139715,
+    "n_docs": 2698,
+    "per_difficulty": {
+      "easy": {
+        "doc_f1": 0.549404761904762,
+        "n_docs": 900
+      },
+      "medium": {
+        "doc_f1": 0.48393453043063717,
+        "n_docs": 899
+      },
+      "hard": {
+        "doc_f1": 0.44271412680756395,
+        "n_docs": 899
+      }
+    }
+  },
+  "Ensemble": {
+    "doc_tuned_threshold": 0.3750000000000001,
+    "pairwise_threshold": 0.22500000000000006,
+    "doc_precision": 0.4937299234000494,
+    "doc_recall": 0.5013034346429454,
+    "doc_f1": 0.49087978161365853,
+    "n_docs": 2698,
+    "per_difficulty": {
+      "easy": {
+        "doc_f1": 0.5570299823633157,
+        "n_docs": 900
+      },
+      "medium": {
+        "doc_f1": 0.4927353143704645,
+        "n_docs": 899
+      },
+      "hard": {
+        "doc_f1": 0.44271412680756395,
+        "n_docs": 899
+      }
+    }
+  }
+}
