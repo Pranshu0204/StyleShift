@@ -43,10 +43,6 @@ DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is
 ENCODER_MODEL = "all-mpnet-base-v2"
 
 
-# ──────────────────────────────────────────────────────────────
-# Dataset
-# ──────────────────────────────────────────────────────────────
-
 class PairDataset(Dataset):
     """
     Wraps precomputed embeddings for the Siamese network.
@@ -71,10 +67,6 @@ class PairDataset(Dataset):
     def __getitem__(self, idx):
         return self.emb_a[idx], self.emb_b[idx], self.labels[idx]
 
-
-# ──────────────────────────────────────────────────────────────
-# Model
-# ──────────────────────────────────────────────────────────────
 
 class SiameseMLP(nn.Module):
     """
@@ -114,10 +106,6 @@ class SiameseMLP(nn.Module):
         return probs
 
 
-# ──────────────────────────────────────────────────────────────
-# Encoding helper (used at train time and inference)
-# ──────────────────────────────────────────────────────────────
-
 def encode_texts_batch(texts: list[str], encoder: SentenceTransformer, batch_size: int = 64) -> np.ndarray:
     """Encode texts with the frozen encoder. Returns (N, 768) float32."""
     return encoder.encode(
@@ -128,10 +116,6 @@ def encode_texts_batch(texts: list[str], encoder: SentenceTransformer, batch_siz
         normalize_embeddings=True,
     ).astype(np.float32)
 
-
-# ──────────────────────────────────────────────────────────────
-# Training
-# ──────────────────────────────────────────────────────────────
 
 def train_siamese(
     emb_a_train: np.ndarray, emb_b_train: np.ndarray, y_train: np.ndarray,

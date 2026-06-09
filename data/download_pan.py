@@ -5,14 +5,6 @@ This script verifies the expected directory structure of the PAN 2025
 Style Change Detection dataset once it has been downloaded and extracted.
 It does NOT download anything — that requires a Zenodo account.
 
-WHY PAN 2025 instead of earlier editions?
-  PAN 2025 introduces sentence-level detection (vs. paragraph-level in 2021)
-  and provides three difficulty tiers (easy / medium / hard) based on how
-  much topical variation exists between authors. This difficulty axis is a
-  natural, free ablation dimension: a system that degrades gracefully from
-  easy to hard demonstrates genuine stylometric capability rather than
-  topic-based shortcutting.
-
 Dataset source (open access, free Zenodo account required):
   https://zenodo.org/records/14891299
 
@@ -114,11 +106,8 @@ def verify_dataset(data_dir: Path) -> None:
     overall_ratio = (grand_pairs - grand_changes) / max(grand_changes, 1)
     print(f"  {'TOTAL':<23} {grand_pairs:>8} {grand_changes:>9} {overall_ratio:>10.1f}:1")
     print()
-    print("  → Class imbalance confirmed: use F1-macro and AUC-ROC, NOT accuracy.")
-    print("  → Three difficulty tiers form a built-in ablation axis:")
-    print("      easy   = topic shift aids detection (upper bound)")
-    print("      medium = reduced topic signal")
-    print("      hard   = pure style, no topic shortcut (lower bound)")
+    print("  → Class imbalance: ~4:1 negative-to-positive ratio.")
+    print("  → Three difficulty tiers: easy / medium / hard (topical variety decreasing).")
 
 
 if __name__ == "__main__":

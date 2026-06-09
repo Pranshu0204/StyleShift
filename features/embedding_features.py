@@ -1,21 +1,10 @@
 """
 Stream B — Contextual Embedding Features
 
-Uses a frozen sentence-transformer (all-mpnet-base-v2) to produce 768-dim
-dense embeddings for each text block.
-
-Design decision — why frozen?
-  Using a frozen encoder means we treat it as a general-purpose semantic
-  feature extractor. Fine-tuning on a small dataset like PAN risks
-  overfitting and would make the embedding less general — the encoder
-  would start memorizing training documents rather than learning
-  transferable style representations. Fine-tuning is reserved for the
-  Siamese MLP head (Stage 2, Component B), which has far fewer parameters.
-
-Why all-mpnet-base-v2?
-  It achieves state-of-the-art semantic similarity performance among
-  sentence-transformer models while outputting L2-normalized 768-dim
-  vectors, making cosine similarity computation trivial (dot product).
+Wraps a frozen all-mpnet-base-v2 sentence-transformer to produce
+L2-normalised 768-dim embeddings per text block. The encoder is kept
+frozen to avoid overfitting on the small PAN dataset; only the Siamese
+MLP head (Component B) is trained.
 """
 
 import numpy as np

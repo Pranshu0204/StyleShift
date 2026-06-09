@@ -1,30 +1,19 @@
 """
-Stage 3 — Ablation Study (threshold-tuned, per-difficulty)
+Ablation Study — compares four variants on the validation set:
+  1. Stream A only (SVM on stylometric features)
+  2. Stream B only (cosine similarity baseline)
+  3. Siamese Network alone
+  4. Full ensemble
 
-Compares four variants on the same validation set:
-  1. Stream A only — SVM on stylometric features
-  2. Stream B only — cosine similarity threshold baseline
-  3. Siamese Network alone — no classical features
-  4. Full ensemble (proposed system)
+Each variant is evaluated at default threshold (0.5) and at a tuned
+threshold (swept 0.05–0.95 to maximise change-class F1). Per-difficulty
+breakdown (easy / medium / hard) is included.
 
-Three views are reported for each variant:
-  A) Default threshold (0.5) — the headline number most papers show
-  B) Per-variant TUNED threshold — picked on the validation set to
-     maximise minority-class (change) F1. For a paper-ready result this
-     should be a separate dev fold; for a portfolio project val-tuning
-     is fine if labelled honestly as such (which we do here).
-  C) Per-difficulty breakdown (easy / medium / hard) — the
-     research-defining finding: does the ensemble degrade more gracefully
-     than the baselines on `hard` documents where pure stylometry is the
-     only available signal?
-
-Also reports AUC-ROC, AUC-PR, and Brier alongside F1. These are
-threshold-independent and tell the calibration story that the @0.5 macro F1
-alone hides.
+Also reports AUC-ROC, AUC-PR, and Brier.
 
 Outputs:
-  results/ablation_results.json — full numbers (default, tuned, per-difficulty)
-  results/tuned_thresholds.json — read by document_eval.py for consistency
+  results/ablation_results.json
+  results/tuned_thresholds.json  (consumed by document_eval.py)
 
 Usage:
     python evaluation/ablation.py
@@ -58,10 +47,6 @@ VARIANT_KEYS = {
 }
 
 
-# ──────────────────────────────────────────────────────────────
-# Data loading
-# ──────────────────────────────────────────────────────────────
-
 def load_data() -> dict:
     return {
         "y_val":         np.load(RESULTS_DIR / "y_val.npy"),
@@ -77,10 +62,6 @@ def load_difficulties(split: str = "val") -> np.ndarray:
         meta = json.load(f)
     return np.array([m.get("difficulty", "unknown") for m in meta])
 
-
-# ──────────────────────────────────────────────────────────────
-# Scoring primitives
-# ──────────────────────────────────────────────────────────────
 
 def best_threshold(y_true: np.ndarray, y_prob: np.ndarray) -> float:
     """Threshold that maximises minority-class F1 on the val set."""
@@ -126,10 +107,6 @@ def per_difficulty(
     return out
 
 
-# ──────────────────────────────────────────────────────────────
-# Pretty printing
-# ──────────────────────────────────────────────────────────────
-
 def print_metric_table(title: str, results: dict, view: str) -> None:
     print(f"\n{'=' * 90}")
     print(f"  {title}")
@@ -164,10 +141,6 @@ def print_per_difficulty_table(results: dict, metric: str = "change_f1") -> None
     print("  Research question: does the hybrid system degrade more GRACEFULLY")
     print("  than any single-component baseline?")
 
-
-# ──────────────────────────────────────────────────────────────
-# Main
-# ──────────────────────────────────────────────────────────────
 
 def main() -> None:
     data = load_data()

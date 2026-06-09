@@ -51,10 +51,6 @@ META = load_meta_learner()
 print("Models loaded.")
 
 
-# ──────────────────────────────────────────────────────────────
-# Core inference
-# ──────────────────────────────────────────────────────────────
-
 def analyze_document(text: str, threshold: float = 0.5) -> tuple:
     """
     Process a pasted document through the full ensemble pipeline.
@@ -139,10 +135,6 @@ def analyze_document(text: str, threshold: float = 0.5) -> tuple:
 
     return fig_prob, html, feature_panel
 
-
-# ──────────────────────────────────────────────────────────────
-# Visualization helpers
-# ──────────────────────────────────────────────────────────────
 
 def build_highlighted_html(
     sentences: list[str],
@@ -254,10 +246,6 @@ def build_feature_panel(
     lines.append("</table>")
     return "".join(lines)
 
-
-# ──────────────────────────────────────────────────────────────
-# Gradio interface
-# ──────────────────────────────────────────────────────────────
 
 EXAMPLE_DOC = (
     "The history of artificial intelligence begins in antiquity, with myths, stories, "

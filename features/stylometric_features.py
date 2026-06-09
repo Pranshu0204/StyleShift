@@ -65,12 +65,7 @@ FW_INDEX = {w: i for i, w in enumerate(FUNCTION_WORDS)}
 POS_TAGS = ["NOUN", "VERB", "ADJ", "ADV", "PRON", "DET"]
 
 
-# ──────────────────────────────────────────────────────────────
-# Feature group 1: Lexical features
-# WHY they shift: authors differ in vocabulary richness, punctuation habits,
-# and capitalization conventions (e.g., some overuse exclamation marks,
-# some capitalize mid-sentence for emphasis).
-# ──────────────────────────────────────────────────────────────
+# Lexical features
 
 def lexical_features(text: str) -> dict:
     tokens = text.split()
@@ -100,13 +95,7 @@ def lexical_features(text: str) -> dict:
     }
 
 
-# ──────────────────────────────────────────────────────────────
-# Feature group 2: Syntactic features
-# WHY they shift: authors differ in syntactic preferences — e.g., some
-# overuse passive constructions (more VERB tags with auxiliary verbs) while
-# others prefer noun-heavy academic prose (high NOUN ratio). Average
-# sentence length also varies strongly between authors.
-# ──────────────────────────────────────────────────────────────
+# Syntactic features
 
 def syntactic_features(text: str) -> dict:
     doc = NLP(text)
@@ -130,10 +119,7 @@ def syntactic_features(text: str) -> dict:
     return {**pos_ratios, "avg_sentence_length": avg_sent_len}
 
 
-# ──────────────────────────────────────────────────────────────
-# Feature group 3: Function word frequency vector
-# L2-normalized so vector magnitude doesn't correlate with block length.
-# ──────────────────────────────────────────────────────────────
+# Function word frequency vector (L2-normalized)
 
 def function_word_vector(text: str) -> np.ndarray:
     tokens = re.findall(r"\b\w+\b", text.lower())
@@ -146,12 +132,7 @@ def function_word_vector(text: str) -> np.ndarray:
     return vec / norm if norm > 0 else vec
 
 
-# ──────────────────────────────────────────────────────────────
-# Feature group 4: Readability
-# WHY they shift: different authors write at different complexity levels.
-# A student who pastes AI-generated text into their essay will often shift
-# the reading level noticeably — this is the operational forensics use case.
-# ──────────────────────────────────────────────────────────────
+# Readability features
 
 def readability_features(text: str) -> dict:
     try:
@@ -161,10 +142,6 @@ def readability_features(text: str) -> dict:
         fk_grade = fog = 0.0
     return {"flesch_kincaid_grade": fk_grade, "gunning_fog": fog}
 
-
-# ──────────────────────────────────────────────────────────────
-# Master extractor
-# ──────────────────────────────────────────────────────────────
 
 def extract_stylometric_features(text: str) -> np.ndarray:
     """

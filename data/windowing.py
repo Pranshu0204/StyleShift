@@ -1,41 +1,17 @@
 """
 Sliding Window Segmentation — PAN 2025 Style Change Detection
 
-PAN 2025 key difference from PAN 2021:
-  Labels are at the SENTENCE level, not the paragraph level.
-  Each problem-X.txt has one sentence per line. The truth JSON
-  has changes[i] = 1 meaning the authorship switches between
-  sentence i and sentence i+1. This removes the paragraph-to-window
-  label mapping that PAN 2021 required.
-
-WHY sliding windows instead of full-document classification?
-  Full-document approaches lose position information — they cannot tell
-  you WHERE in the document the switch happens. Pairwise block comparison
-  localises the boundary to a specific region. Smaller windows give
-  finer granularity but more noise. Larger windows are more stable but
-  miss short injected passages. WINDOW_SIZE is a key hyperparameter.
-
-WHY pairwise binary classification?
-  We reduce the sequence-level problem to pairwise binary classification.
-  For each consecutive pair (block_i, block_{i+1}) we predict:
-    Y = 0  →  same author continues
-    Y = 1  →  authorship switches (style change boundary)
-  This is the standard formulation in PAN shared tasks and makes the
-  problem tractable with standard classifiers including SVMs.
-
-Label assignment for window pairs:
-  The label of pair (block_i, block_{i+1}) is the change signal at the
-  exact sentence boundary between the two blocks:
+Converts PAN 2025 documents (one sentence per line) into BlockPair
+training examples. Each pair covers two consecutive non-overlapping
+windows of WINDOW_SIZE sentences. The label is the change signal at
+the sentence boundary between the two blocks:
     label = changes[block_start[i+1] - 1]
-  Within-block changes are a known limitation of fixed-size windowing
-  — a research observation worth noting in any write-up.
 
-PAN 2025 dataset structure:
+Dataset structure:
   pan25-multi-author-analysis/
-    easy/   train/ + validation/   (documents from varied topics)
-    medium/ train/ + validation/   (limited topic variety)
-    hard/   train/ + validation/   (all sentences share the same topic)
-  The three difficulties form a natural ablation axis.
+    easy/   train/ + validation/
+    medium/ train/ + validation/
+    hard/   train/ + validation/
 """
 
 import json

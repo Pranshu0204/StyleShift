@@ -1,42 +1,12 @@
 """
-Stage 3 — Document-Level Evaluation (threshold-tuned, per-difficulty)
+Document-Level Evaluation — did the model find the right boundary in each doc?
 
-Beyond pairwise accuracy, this module evaluates the system at the
-document level: given a full document, does the system correctly
-identify ALL change boundaries?
+Groups pairwise predictions by document and computes per-document
+precision / recall / F1, then reports the macro-average across all docs.
 
-WHY document-level evaluation matters:
-  Pairwise F1 measures how well we classify individual block pairs. But
-  in a forensics context, we care about finding the right SENTENCE —
-  not just classifying pairs. A model that misses 2 out of 5 boundaries
-  in every document is operationally useless even if it achieves 70%
-  pairwise F1.
-
-WHY per-difficulty matters:
-  PAN 2025 provides easy/medium/hard tiers where the topical signal
-  decreases. A system that holds up on hard documents demonstrates
-  genuine stylometric capability rather than topic-based shortcutting.
-
-THRESHOLDS:
-  Pairwise F1 and document-level F1 are NOT the same objective — the
-  threshold that maximizes pairwise change-class F1 over-predicts
-  boundaries, which hurts document precision. So this script does its
-  OWN threshold sweep, picking the per-model threshold that maximizes
-  mean document-level F1. The pairwise thresholds from ablation.py are
-  still loaded for cross-reference but the doc-level results use the
-  doc-level-optimal threshold. Both are honest objectives — they just
-  optimize different things.
-
-METHOD:
-  For each document, we have a sequence of predicted probabilities
-  p_0, p_1, ... for each consecutive block pair. We threshold to get
-  predicted change positions, then compare to ground truth.
-
-  precision_d = correctly predicted boundaries / total predicted boundaries
-  recall_d    = correctly predicted boundaries / total true boundaries
-  F1_d        = harmonic mean of the two
-
-  Reported as the mean across all documents (macro-average over docs).
+Threshold is tuned separately from the pairwise threshold (sweeping
+0.05–0.95) because the two objectives have different precision/recall
+trade-offs. Per-difficulty breakdown (easy / medium / hard) is included.
 
 Usage:
     python evaluation/document_eval.py --data-dir pan25-multi-author-analysis
@@ -86,10 +56,6 @@ def best_threshold_for_doc_f1(docs: dict[str, dict]) -> tuple[float, float]:
     return best_t, best_f1
 
 
-# ──────────────────────────────────────────────────────────────
-# Grouping pair predictions by document
-# ──────────────────────────────────────────────────────────────
-
 def group_pairs_by_doc(
     doc_meta: list[dict],
     y_true: np.ndarray,
@@ -124,10 +90,6 @@ def split_docs_by_difficulty(docs: dict[str, dict]) -> dict[str, dict[str, dict]
             out[diff][doc_id] = data
     return out
 
-
-# ──────────────────────────────────────────────────────────────
-# Document-level F1
-# ──────────────────────────────────────────────────────────────
 
 def document_level_f1(
     docs: dict[str, dict],
@@ -169,10 +131,6 @@ def document_level_f1(
     mean_f1 = float(np.mean([d["f1"]        for d in per_doc]))
     return mean_p, mean_r, mean_f1, per_doc
 
-
-# ──────────────────────────────────────────────────────────────
-# Main
-# ──────────────────────────────────────────────────────────────
 
 def main() -> None:
     # All inputs are read from results/ — produced by pair_generator.py and

@@ -1,32 +1,11 @@
 """
-Stage 3 — Evaluation Framework
+Evaluation — reports the full metric suite on the validation set.
 
-Reports the full metric suite on the validation set. Standard accuracy
-is intentionally excluded as the primary metric because the dataset is
-heavily class-imbalanced (many more "no change" than "change" pairs).
-A trivial classifier that always predicts "no change" could achieve
->80% accuracy while being completely useless for the detection task.
+Metrics: F1-macro, change-class F1, AUC-ROC, AUC-PR, Brier score.
+Accuracy is excluded — the dataset is ~4:1 imbalanced so it is not
+a meaningful signal for the minority (change) class.
 
-PRIMARY METRICS (used for model comparison):
-  - F1-score (macro): weights both classes equally regardless of frequency.
-    WHY macro? Under imbalance, weighted F1 can be high even if the minority
-    class (style changes) is completely missed. Macro F1 penalizes that.
-  - F1-score (minority class = 1): directly measures detection of changes.
-  - AUC-ROC: area under the Receiver Operating Characteristic curve.
-    WHY AUC-ROC? It measures discriminability across ALL decision thresholds,
-    not just the default 0.5. A model with AUC=0.9 can separate positives
-    from negatives 90% of the time regardless of the threshold used.
-
-SECONDARY METRICS:
-  - AUC-PR (Precision-Recall): more informative than ROC under heavy imbalance.
-    WHY? The ROC curve is optimistic under imbalance because it accounts for
-    true negatives (which are easy when negatives dominate). The PR curve
-    focuses entirely on the positive class — it exposes whether a model
-    has real precision on the minority class or just gets lucky at low recall.
-  - Brier Score: mean squared error between predicted probabilities and true
-    labels. A model can have high AUC but poorly calibrated probabilities.
-    Brier Score penalizes overconfident wrong predictions.
-  - Normalized confusion matrix as a seaborn heatmap.
+Also generates ROC/PR curves and normalised confusion matrices.
 
 Usage:
     python evaluation/metrics.py --model ensemble
@@ -43,7 +22,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from sklearn.metrics import (
-    ConfusionMatrixDisplay,
     auc,
     brier_score_loss,
     confusion_matrix,
